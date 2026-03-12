@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+This is a very simple HTML page with a chat widget built in.
+
+Ideally the widget + server would be hosted and called via a script or iframe in production
+-->
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mock Website</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f0f2f5;
+                margin: 0;
+                padding: 20px;
+            }
+
+            #chat-button {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                background-color: #000000;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-size: 30px;
+                cursor: pointer;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+            }
+
+            #chat-container {
+                position: fixed;
+                bottom: 90px;
+                right: 20px;
+                width: 350px;
+                height: 450px;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                display: none;
+                flex-direction: column;
+                overflow: hidden;
+                z-index: 1000;
+            }
+
+            #chat-header {
+                background: #000000;
+                color: white;
+                padding: 15px;
+                font-weight: bold;
+            }
+
+            #chat-window {
+                flex-grow: 1;
+                padding: 15px;
+                overflow-y: auto;
+                background: #fff;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .message {
+                padding: 8px 12px;
+                border-radius: 15px;
+                max-width: 80%;
+                font-size: 14px;
+                line-height: 1.4;
+            }
+
+            .user {
+                align-self: flex-end;
+                background: #000000;
+                color: white;
+                border-bottom-right-radius: 2px;
+            }
+
+            .ai {
+                align-self: flex-start;
+                background: #e9ecef;
+                color: #000000;
+                border-bottom-left-radius: 2px;
+            }
+
+            #input-area {
+                display: flex;
+                padding: 10px;
+                border-top: 1px solid #eee;
+            }
+
+            #user-input {
+                flex-grow: 1;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                padding: 8px 15px;
+                outline: none;
+            }
+
+            #send-btn {
+                background: none;
+                border: none;
+                color: #000000;
+                font-weight: bold;
+                margin-left: 10px;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+
+        <h1>Welcome</h1>
+        <p>This is a mock landing page. Widget is bottom right</p>
+
+        <div id="chat-button" onclick="toggleChat()">...</div>
+
+        <div id="chat-container">
+            <div id="chat-header">Assistant</div>
+            <div id="chat-window">
+                <div class="message ai">How can I help you today?</div>
+            </div>
+            <div id="input-area">
+                <input type="text" id="user-input" placeholder="Type a message..." onkeypress="handleKey(event)">
+                <button id="send-btn" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+
+        <script>
+            function toggleChat() {
+                const container = document.getElementById('chat-container');
+                container.style.display = container.style.display === 'flex' ? 'none' : 'flex';
+            }
+
+            function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
+
+            async function sendMessage() {
+                const input = document.getElementById('user-input');
+                const window = document.getElementById('chat-window');
+                const message = input.value.trim();
+                if (!message) return;
+
+                window.innerHTML += `<div class="message user">${message}</div>`;
+                input.value = '';
+                window.scrollTop = window.scrollHeight;
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: message })
+                    });
+                    const data = await response.json();
+
+                    window.innerHTML += `<div class="message ai">${data.answer}</div>`;
+                    window.scrollTop = window.scrollHeight;
+                } catch (err) {
+                    window.innerHTML += `<div class="message ai">Error connecting to server.</div>`;
+                }
+            }
+        </script>
+    </body>
+</html>
