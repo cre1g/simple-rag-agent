@@ -11,8 +11,9 @@ loader = DirectoryLoader("./docs", glob="./*.txt", loader_cls=TextLoader)
 
 raw_docs = loader.load()
 
-print(f"Loaded {len(raw_docs)} separate files.")
+print(f"Loaded {len(raw_docs)} files")
 
+#Specifies chunk parameters
 splitter = RecursiveCharacterTextSplitter(
     chunk_size=100,
     chunk_overlap=20
@@ -24,4 +25,4 @@ embedding_model = OpenAIEmbeddings(model="text-embedding-3-small")
 
 Chroma.from_documents(all_chunks, embedding_model, persist_directory="./chroma_db")
 
-print("Database created successfully!")
+print("Database created")
