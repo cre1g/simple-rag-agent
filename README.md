@@ -9,9 +9,12 @@ Check requirements.txt for dependencies. Running locally with python version 3.1
 
 **query.py**:
 starts a Flask server and waits for a request from chat.html
-does a similarity search given the query and chat_history
-builds the final response, again using context from previous steps
-delivers it back to chat.html
+
+Does a similarity search given the query and chat_history
+
+Builds the final response, again using context from previous steps
+
+Delivers it back to chat.html
 
 **chat.html** hosts the widget, mock webpage, and script to call the flask server
 
